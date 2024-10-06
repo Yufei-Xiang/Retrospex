@@ -1,0 +1,36 @@
+accelerate launch --config_file "deepspeed_config_qlora.yaml"  train.py \
+--seed 100 \
+--model_name_or_path # TODO(llama3) \
+--dataset_name # TODO(AgentInstruct + ShareGPT) \
+--chat_template_format "none" \
+--add_special_tokens False \
+--append_concat_token False \
+--splits "train,test" \
+--max_seq_length 1024 \
+--num_train_epochs 2 \
+--logging_steps 20 \
+--log_level "info" \
+--logging_strategy "steps" \
+--evaluation_strategy "epoch" \
+--save_strategy "epoch" \
+--bf16 False \
+--fp16 True \
+--learning_rate 2e-5 \
+--lr_scheduler_type "cosine" \
+--weight_decay 1e-4 \
+--warmup_ratio 0 \
+--max_grad_norm 1.0 \
+--output_dir # TODO(output path of finetuned model) \
+--per_device_train_batch_size 8 \
+--per_device_eval_batch_size 8 \
+--gradient_accumulation_steps 8 \
+--gradient_checkpointing True \
+--use_reentrant False \
+--dataset_text_field "text" \
+--use_flash_attn False \
+--use_peft_lora True \
+--lora_r 16 \
+--lora_alpha 64 \
+--lora_dropout 0.05 \
+--lora_target_modules "q_proj,k_proj,v_proj,o_proj,down_proj,up_proj,gate_proj,embed_tokens,lm_head" \
+--use_4bit_quantization False

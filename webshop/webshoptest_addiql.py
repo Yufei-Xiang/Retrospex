@@ -548,18 +548,15 @@ def parse_args():
 def main():
     args = parse_args()
     # fine-tuned llama3 8B
-    model_id = "/home/yfwang/xyf/agentlm3"
+    # TODO(): change to the path of finetuned llama3
+    model_id = None
 
     tokenizer = AutoTokenizer.from_pretrained(model_id,trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
-        low_cpu_mem_usage=True,
-        # quantization_config=bnb_config,
-        attn_implementation="eager",
         torch_dtype=torch.float16,
-        # device_map='auto',
-        # max_memory=max_memory_mapping
-    ).cuda()
+        device_map='auto',
+    )
 
     IQLmodel = load_model_iql(args['iql_path'], args)
     sbert_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
