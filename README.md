@@ -29,7 +29,12 @@ Then you can run ```alfworld/alfworldtest_addiql.py``` to test the model.
 
 ### 3.2 ScienceWorld
 First, Install the ScienceWorld Environment according to https://github.com/allenai/ScienceWorld.
-Then you can run ```swift_inference/run_eval_fast_slow.sh``` to test the model on all 30 subtasks.
+Then you can run 
+```bash
+bash swift_inference/run_eval_fast_slow.sh
+```
+to test the model on all 30 subtasks.
+Our code is refer to the code of original SWIFTSAGE: https://github.com/SwiftSage/SwiftSage, and we only occupy the Fast part——SWIFT with IQL added.
 
 ### 3.3 Webshop
  First, you need to install the Webshop Environment according to https://github.com/princeton-nlp/WebShop.
