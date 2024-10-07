@@ -17,6 +17,7 @@ Use ```train_llama3/run_lora_deepspeed.sh``` to train the model. You should chan
 ### 1.2 Train flan-t5(ScienceWorld)
 
 ## 2. Train IQLs
+Run ```train_IQL/train_iql_swift.py``` to train the IQL model for ScienceWorld, pay attention that you need to first unzip the collected trajectories of ScienceWorld. For Webshop and ALFWorld, directly run the corresponding python file in train_IQL.
 
 ## 3. Test Retrospex
 
@@ -27,9 +28,11 @@ First you need to download and put datasets of ALFWorld into ```alfworld/alfworl
 Then you can run ```alfworld/alfworldtest_addiql.py``` to test the model.
 
 ### 3.2 ScienceWorld
+First, Install the ScienceWorld Environment according to https://github.com/allenai/ScienceWorld.
+Then you can run ```swift_inference/run_eval_fast_slow.sh``` to test the model on all 30 subtasks.
 
 ### 3.3 Webshop
-
+ First, you need to install the Webshop Environment according to https://github.com/princeton-nlp/WebShop.
 You can run ```webshop/webshoptest_addiql.py``` to test the model.
 
 
