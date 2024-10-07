@@ -89,7 +89,7 @@ def train_iql_alf(args):
             start = end
         print("Start = %d"%start)
     
-    model_path = args.save_model_path
+    model_path = args.save_path
     torch.save(iql.state_dict(), model_path)
 
 def parse_args():
@@ -115,7 +115,7 @@ def parse_args():
     parser.add_argument('--max-episode-steps', type=int, default=1000)
     parser.add_argument('--env_name', default='scienceworld', type=str)
     parser.add_argument('--dataset_type', default='gpt', type=str)
-    parser.add_argument('--save_model_path', default='final_iql_alfworld.pt', type=str)
+    parser.add_argument('--save_path', default='final_iql_alfworld.pt', type=str)
 
 
     return parser.parse_args()
