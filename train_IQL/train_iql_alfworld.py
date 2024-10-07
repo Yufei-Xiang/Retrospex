@@ -39,9 +39,9 @@ def reform_datapd(data_pd):
             data_pd.at[j,'reward'] = avg_reward
     return
 
-def get_dataset_webshop():
+def get_dataset_ALFWorld():
     dataset = {"observations":[], 'taskDes':[], "actions":[], "next_observations":[], "rewards":[], "terminals":[]}
-    data_pd = pd.read_csv("trajsOnWebshop.csv",header=None)
+    data_pd = pd.read_csv("trajsOnALFWorld.csv",header=None)
     data_pd.columns = ['taskDes','observation','next_observation','action','reward','terminal']
     reform_datapd(data_pd)
     data_pd = data_pd.sample(frac=1)
@@ -61,42 +61,15 @@ def check_dataset(dataset):
             if len(value[j]) <= 0:
                 print(i,j)
 
-def train_iql_swift(args):
-    torch.set_num_threads(1)
-    set_seed(args.seed, env=None)
-    dataset = get_dataset_swift_balanced()
-    iql = ImplicitQLearning(
-        args,
-        optimizer_factory=lambda params: torch.optim.Adam(params, lr=args.learning_rate)
-    )
-    start = 0
-    k = list(dataset.keys())[0]
-    n = len(dataset[k])
-    round = 0
-    for step in trange(args.n_steps):
-        if round >= 20:
-            break
-        end = start + args.batch_size
-        if end >= n:
-            iql.update(**sample_batch_all(dataset, start, n))
-            start = 0
-            round += 1
-        else:
-            iql.update(**sample_batch_all(dataset, start, end))
-            start = end
-        print("Start = %d"%start)
-    
-    model_path = '/home/nctu/xyf/enlighten2/LLMAgent/methods/SWIFT/IQLmodel/final_iql_justtest.pt'
-    torch.save(iql.state_dict(), model_path)
 
 def train_iql_alf(args):
     torch.set_num_threads(1)
     set_seed(args.seed, env=None)
-    dataset = get_dataset_webshop()
+    dataset = get_dataset_ALFWorld()
     iql = ImplicitQLearning_webshop(
         args,
         optimizer_factory=lambda params: torch.optim.Adam(params, lr=args.learning_rate)
-    )
+    ) # the iql structure of alfworld is the same with webshop
     start = 0
     k = list(dataset.keys())[0]
     n = len(dataset[k])
@@ -116,7 +89,7 @@ def train_iql_alf(args):
             start = end
         print("Start = %d"%start)
     
-    model_path = '/home/yfwang/xyf/IQL/final_iql_webshop_twin_2.pt'
+    model_path = args.save_model_path
     torch.save(iql.state_dict(), model_path)
 
 def parse_args():
@@ -142,6 +115,7 @@ def parse_args():
     parser.add_argument('--max-episode-steps', type=int, default=1000)
     parser.add_argument('--env_name', default='scienceworld', type=str)
     parser.add_argument('--dataset_type', default='gpt', type=str)
+    parser.add_argument('--save_model_path', default='final_iql_alfworld.pt', type=str)
 
 
     return parser.parse_args()
