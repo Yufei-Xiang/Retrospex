@@ -191,8 +191,6 @@ def eval(args, task_num, logger):
     taskName = taskNames[task_num]
     env.load(taskName, 0, args['simplification_str'])
     lm_model, tokenizer, sbert_model, llm = load_model(args, device)
-    # IQLagent_path = "/home/nctu/xyf/enlighten2/LLMAgent/methods/IQL/logs/scienceworld/IQL_Drrn/"+"compare_drrn_"+str(task_num)+".pt"
-    # IQLagent_path = "/home/nctu/xyf/enlighten2/LLMAgent/methods/IQL/logs/scienceworld/IQLgolden/final_golden.pt"
     IQLmodel = load_model_iql(args["iql_path"], args)
 
     variations = load_variation(env, args, task_num, logger)
@@ -488,15 +486,6 @@ def eval(args, task_num, logger):
             # row = {'taskDes':task_description,'look':info['look'],'inv':info['inv'],'pre_score':info['score'],'observation':obs,'action':action,'action_lst':action_lst}
             if not executed:
                 obs, reward, done, info = env.step(action)
-                # colums = ['taskDes','next_look','look','inv','next_inv','score','pre_score','observation','next_obs','action','action_lst','isCompleted']
-                # row['next_look'] = info['look']
-                # row['next_inv'] = info['inv']
-                # row['score'] = info['score']
-                # row['next_obs'] = obs
-                # row['isCompleted'] = 1 if done == True else 0
-                # with open("trajsWithActionSamples2.csv",'a',newline='', encoding='utf-8') as f:
-                #     writer = csv.DictWriter(f, fieldnames=colums)
-                #     writer.writerow(row)
 
 
             if obs.startswith("Ambiguous request"):
@@ -617,7 +606,7 @@ def parse_args():
     parser.add_argument('--tau', type=float, default=0.7)
     parser.add_argument('--beta', type=float, default=3.0)
     parser.add_argument('--learning-rate', type=float, default=1e-4)
-    parser.add_argument("--iql_path", type=str, default="final_iql_latest_balanced_addlast.pt")
+    parser.add_argument("--iql_path", type=str, default="final_iql_swift.pt")
     parser.add_argument('--discount_prob', type=float, default=0.95)
     parser.add_argument('--limit_prob', type=float, default=0.25)
 
