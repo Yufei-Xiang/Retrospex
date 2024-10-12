@@ -15,6 +15,7 @@ You need to carefully install ALFWorld and Webshop environment.
 Use ```train_llama3/run_lora_deepspeed.sh``` to train the model. You should change the model and dataset path in the script to your own path. And after the training, you should merge the lora part to the base model. Use ```train_llama3/merge.py``` to merge the model.
 
 ### 1.2 Train flan-t5(ScienceWorld)
+Run ```swift_only/fast_agent/ds_train.sh``` to train the flan t5 large model.
 
 ## 2. Train IQLs
 Run ```train_IQL/train_iql_swift.py``` to train the IQL model for ScienceWorld, pay attention that you need to first unzip the collected trajectories of ScienceWorld. For Webshop and ALFWorld, directly run the corresponding python file in train_IQL.
