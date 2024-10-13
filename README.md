@@ -20,7 +20,7 @@ Run ```ScienceWorld/IL/fast_agent/ds_train.sh``` to train the flan t5 large mode
 The link of the model we trained is :
 
 ## 2. Train IQLs
-Run ```train_IQL/train_iql_swift.py``` to train the IQL model for ScienceWorld, pay attention that you need to first unzip the collected trajectories of ScienceWorld. For Webshop and ALFWorld, directly run the corresponding python file in train_IQL.
+See README.md in different environments.
 
 ## 3. Test Retrospex
 

@@ -87,7 +87,7 @@ def train_iql_web(args):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--output_dir', default='logs')
-    parser.add_argument('--spm_path', default='IQL/spm_models/unigram_8k.model')
+    parser.add_argument('--spm_path', default='./IQL/spm_models/unigram_8k.model')
 
 
     parser.add_argument('--seed', type=int, default=0)
@@ -105,7 +105,7 @@ def parse_args():
     parser.add_argument('--eval-period', type=int, default=10000)
     parser.add_argument('--n-eval-episodes', type=int, default=10)
     parser.add_argument('--max-episode-steps', type=int, default=1000)
-    parser.add_argument('--save_path', default='final_iql_webshop.pt', type=str)
+    parser.add_argument('--save_path', default='IQLmodel/final_iql_webshop.pt', type=str)
 
 
     return parser.parse_args()

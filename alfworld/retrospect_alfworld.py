@@ -86,7 +86,7 @@ def train_iql_swift(args):
             start = end
         print("Start = %d"%start)
     
-    model_path = '/home/nctu/xyf/enlighten2/LLMAgent/methods/SWIFT/IQLmodel/final_iql_justtest.pt'
+    model_path = 'IQLmodel/final_iql_justtest.pt'
     torch.save(iql.state_dict(), model_path)
 
 def train_iql_alf(args):
@@ -116,13 +116,13 @@ def train_iql_alf(args):
             start = end
         print("Start = %d"%start)
     
-    model_path = '/home/yfwang/xyf/IQL/final_iql_webshop_twin_2.pt'
+    model_path = 'IQLmodel/final_iql_webshop_twin_2.pt'
     torch.save(iql.state_dict(), model_path)
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--output_dir', default='logs')
-    parser.add_argument('--spm_path', default='./spm_models/unigram_8k.model')
+    parser.add_argument('--spm_path', default='./IQL/spm_models/unigram_8k.model')
 
 
     parser.add_argument('--seed', type=int, default=0)

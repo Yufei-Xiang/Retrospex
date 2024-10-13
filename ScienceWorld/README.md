@@ -4,7 +4,11 @@ First, Install the ScienceWorld Environment according to https://github.com/alle
 
 Run ```ScienceWorld/IL/fast_agent/ds_train.sh``` to train the flan t5 large model.
 
-## 2. Test Retrospex
+## 2. Train IQL
+
+Use ```retrospect_scienceworld.py``` to train iql model.
+
+## 3. Test Retrospex
 
 After training IQL models, then you can run 
 ```bash
