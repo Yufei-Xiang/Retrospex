@@ -10,7 +10,7 @@ pip install -r requirements.txt
 
 ### 1.1 Train Llama3(Webshop and ALFWorld)
 
-Use ```IL/train_llama3/run_lora_deepspeed.sh``` to train the model. You should change the model and dataset path in the script to your own path. And after the training, you can merge the lora part to the base model. Use ```IL/train_llama3/merge.py``` to merge the model.
+Use ```alfworld/IL/train_llama3/run_lora_deepspeed.sh``` to train the model. You should change the model and dataset path in the script to your own path. And after the training, you can merge the lora part to the base model. Use ```alfworld/IL/train_llama3/merge.py``` to merge the model.
 
 The link of the model we trained is :
 
@@ -30,14 +30,14 @@ First, Install the ALFWorld Environment according to https://github.com/alfworld
 
 Then you need to download and put datasets of ALFWorld into ```alfworld/alfworld_data```.
 
-Then you can run ```alfworld/alfworldtest_addiql.py``` to test the model.
+Then you can run ```alfworld/dynamic_action_scoring_alfworld.py``` to test the model.
 
 ### 3.2 ScienceWorld
 First, Install the ScienceWorld Environment according to https://github.com/allenai/ScienceWorld.
 
 Then you can run 
 ```bash
-bash swift_inference/run_eval_fast_slow.sh
+bash swift_inference/run_eval.sh
 ```
 to test the model on all 30 subtasks.
 Our code is refer to the code of original SWIFTSAGE: https://github.com/SwiftSage/SwiftSage, and we only occupy the Fast part——SWIFT with IQL added.
@@ -45,7 +45,7 @@ Our code is refer to the code of original SWIFTSAGE: https://github.com/SwiftSag
 ### 3.3 Webshop
 First, you need to install the Webshop Environment according to https://github.com/princeton-nlp/WebShop.
 
-Then you can run ```webshop/webshoptest_addiql.py``` to test the model.
+Then you can run ```webshop/dynamic_action_scoring_alfworld.py``` to test the model.
 
 
 

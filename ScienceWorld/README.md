@@ -8,7 +8,7 @@ Run ```ScienceWorld/IL/fast_agent/ds_train.sh``` to train the flan t5 large mode
 
 After training IQL models, then you can run 
 ```bash
-bash swift_inference/run_eval_fast_slow.sh
+bash run_eval.sh
 ```
 to test the model on all 30 subtasks.
 

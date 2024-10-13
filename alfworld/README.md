@@ -8,4 +8,4 @@ Use ```IL/train_llama3/run_lora_deepspeed.sh``` to train the model. You should c
 
 ## 2. Test Retrospex
 
-After training IQL models, run ```alfworld/alfworldtest_addiql.py``` to test our method.
+After training IQL models, run ```dynamic_action_scoring_alfworld.py``` to test our method.

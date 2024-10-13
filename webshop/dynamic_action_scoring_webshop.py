@@ -533,7 +533,7 @@ def parse_args():
     parser.add_argument('--learning-rate', type=float, default=1e-4)
     parser.add_argument('--discount_prob', type=float, default=0.9)
     parser.add_argument('--limit_prob', type=float, default=0.5)
-    parser.add_argument("--iql_path", type=str, default="IQL/IQLmodel/final_iql_webshop_twin_20.pt")
+    parser.add_argument("--iql_path", type=str, default="IQLmodel/final_iql_webshop_twin_20.pt")
     parser.add_argument("--llm_path", type=str)
 
     args = parser.parse_args()
