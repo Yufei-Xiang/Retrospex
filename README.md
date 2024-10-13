@@ -12,7 +12,7 @@ pip install -r requirements.txt
 
 Use ```alfworld/IL/train_llama3/run_lora_deepspeed.sh``` to train the model. You should change the model and dataset path in the script to your own path. And after the training, you can merge the lora part to the base model. Use ```alfworld/IL/train_llama3/merge.py``` to merge the model.
 
-The link of the model we trained is :
+The link of the model we trained is : https://huggingface.co/AronXiang/RetrospexLLaMA3
 
 ### 1.2 Train flan-t5(ScienceWorld)
 Run ```ScienceWorld/IL/fast_agent/ds_train.sh``` to train the flan t5 large model.
