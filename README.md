@@ -17,7 +17,7 @@ The link of the model we trained is :
 ### 1.2 Train flan-t5(ScienceWorld)
 Run ```ScienceWorld/IL/fast_agent/ds_train.sh``` to train the flan t5 large model.
 
-The link of the model we trained is :
+The link of the model we trained is : https://drive.google.com/file/d/1U4NIxW9SalseBvKvNVMJe0jeqZutKSfb/view?usp=sharing
 
 ## 2. Train IQLs
 See README.md in different environments.
