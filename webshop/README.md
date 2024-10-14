@@ -13,4 +13,4 @@ Use ```retrospect_webshop.py``` to train iql model.
 
 ## 3. Test Retrospex
 
-After training IQL models, run ```python dynamic_action_scoring_webshop.py --round 200 --llm_path YOUR LLM PATH --iql_path YOUR IQL MODEL PATH``` to test our method.
+After training IQL models, run ```python dynamic_action_scoring_webshop.py --round 200 --llm_path "YOUR LLM PATH" --iql_path "YOUR IQL MODEL PATH"``` to test our method.
