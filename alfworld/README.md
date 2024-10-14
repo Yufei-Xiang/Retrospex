@@ -10,6 +10,7 @@ The link of the model we trained is : https://huggingface.co/AronXiang/Retrospex
 ## 2. Train IQL
 
 Use ```retrospect_alfworld.py``` to train iql model.
+Also, you can use the iql model in IQLmodel folder we used in our paper.
 
 ## 3. Test Retrospex
 

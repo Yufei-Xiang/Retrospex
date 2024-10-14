@@ -502,7 +502,7 @@ def parse_args():
     parser.add_argument('--discount_prob', type=float, default=0.9) # d
     parser.add_argument('--limit_prob', type=float, default=0.5) # b
     parser.add_argument("--iql_path", type=str, default="IQLmodel/final_iql_webshop_1500.pt") # your IQL model path
-    parser.add_argument("--llm_path", type=str) # your llama3 path
+    parser.add_argument("--llm_path", type=str, default=None) # your llama3 path
 
     args = parser.parse_args()
     # params = vars(args)

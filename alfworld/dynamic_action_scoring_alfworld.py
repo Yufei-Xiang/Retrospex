@@ -21,7 +21,7 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output_file", type=str, default="alfworld_result.txt")
 
-    parser.add_argument('--spm_path', default='spm_models/unigram_8k.model')
+    parser.add_argument('--spm_path', default='IQL/spm_models/unigram_8k.model')
     parser.add_argument('--rom_path', default='zork1.z5')
     parser.add_argument('--discount', type=float, default=0.99)
     parser.add_argument('--hidden-dim', type=int, default=128)
@@ -33,8 +33,8 @@ def parse_args():
     parser.add_argument('--learning-rate', type=float, default=1e-4)
     parser.add_argument('--discount_prob', type=float, default=0.95)
     parser.add_argument('--limit_prob', type=float, default=0.6)
-    parser.add_argument("--iql_path", type=str, default="./IQLsrc/final_iql_alf.pt")
-
+    parser.add_argument("--iql_path", type=str, default="IQLmodel/final_iql_alf.pt")
+    parser.add_argument("--llm_path", type=str, default=None)
 
     args = parser.parse_args()
     return args
@@ -148,8 +148,7 @@ def alfworld_run(iql, sbert, args, info, model, tokenizer,env, prompt, to_print=
 def main():
     args = parse_args()
 
-    # TODO(): change to the path of finetuned llama3
-    model_id = None
+    model_id = args.llm_path
 
     model = AutoModelForCausalLM.from_pretrained(model_id,device_map='auto',torch_dtype=torch.float16)
     tokenizer = AutoTokenizer.from_pretrained(model_id)
