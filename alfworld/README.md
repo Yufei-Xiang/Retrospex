@@ -5,6 +5,7 @@ And you need to download and put datasets of ALFWorld data into ```alfworld_data
 ## 1. Train LLaMA3
 
 Use ```IL/train_llama3/run_lora_deepspeed.sh``` to train the model. You should change the model and dataset path in the script to your own path. And after the training, you can merge the lora part to the base model. Use ```IL/train_llama3/merge.py``` to merge the model.
+The link of the model we trained is : https://huggingface.co/AronXiang/RetrospexLLaMA3
 
 ## 2. Train IQL
 
