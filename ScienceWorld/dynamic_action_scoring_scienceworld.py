@@ -1,4 +1,3 @@
-
 import argparse
 import os
 import re
@@ -88,15 +87,15 @@ from logging import INFO, WARN
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def get_file_name(args, task_num):
-    if (len(args["output_path"]) > 0):
-        if not args["output_path"].endswith("/"):
-            args["output_path"] += "/"
+    if (len(args.output_path) > 0):
+        if not args.output_path.endswith("/"):
+            args.output_path += "/"
 
         # Make path if it doesn't exist
-        if not os.path.exists(args['output_path']):
-            os.makedirs(args["output_path"])
+        if not os.path.exists(args.output_path):
+            os.makedirs(args.output_path)
   
-    filenameOutPrefixSeed = args["output_path"] + "task" + str(task_num)
+    filenameOutPrefixSeed = args.output_path + "task" + str(task_num)
 
     return filenameOutPrefixSeed
   
@@ -132,17 +131,17 @@ def clean(strIn):
 def load_model_iql(path, args):
     iql = ImplicitQLearning(
         args,
-        optimizer_factory=lambda params: torch.optim.Adam(params, lr=args['learning_rate'])
+        optimizer_factory=lambda params: torch.optim.Adam(params, lr=args.learning_rate)
     )
     iql.load_state_dict(torch.load(path))
     return iql
 
 def cal_prob(target_text,input_text,model,tokenizer,device,args):
     #将input_text转换为t5模型的输入格式
-    encodings = tokenizer(input_text, return_tensors="pt",max_length=args["max_input_len"] , truncation=True)
+    encodings = tokenizer(input_text, return_tensors="pt",max_length=args.max_input_len , truncation=True)
     encodings = {k: v.to(device) for k, v in encodings.items()}
     #将target_text转换为t5模型的输出格式
-    labels = tokenizer.encode(target_text, return_tensors="pt", max_length=args["max_input_len"],  truncation=True).to(device)
+    labels = tokenizer.encode(target_text, return_tensors="pt", max_length=args.max_input_len,  truncation=True).to(device)
     #由labels生成decoder_input_ids，需要在前面补0使得长度与labels相同
     decoder_input_ids = torch.cat([torch.zeros_like(labels[:, :1]), labels[:, :-1]], dim=-1).to(device)
 
@@ -167,46 +166,42 @@ def decide_action(probs, q_values, step, args):
     nor_q = normalize(q_values)
     print(nor_prob)
     print(nor_q)
-    lam = args['discount_prob']**step
-    lam = max(args['limit_prob'], lam)
-    # lam = args['limit_prob']
+    lam = args.discount_prob**step
+    lam = max(args.limit_prob, lam)
     score = [nor_prob[i]*lam+nor_q[i]*(1-lam) for i in range(len(nor_q))]
     max_score = max(score)
     return score.index(max_score)
 
 # Example user input console, to play through a game.
 def eval(args, task_num, logger):
-    if args["compose_mode"] == "v4":
+    if args.compose_mode == "v4":
         compose_instance = compose_instance_v4
     
     demo_data = None 
-    if args["demo_file"]: 
-        with open(args["demo_file"]) as f:
+    if args.demo_file: 
+        with open(args.demo_file) as f:
             demo_data = json.load(f)
     
     # Initialize environment
-    # env = ScienceWorldEnv("", args["jar_path"], envStepLimit = args["env_step_limit"], threadNum = 0)
-    env = MyScienceWorldEnv("", args["jar_path"], envStepLimit = args["env_step_limit"])
+    env = MyScienceWorldEnv("", args.jar_path, envStepLimit = args.env_step_limit)
     taskNames = env.getTaskNames()
     taskName = taskNames[task_num]
-    env.load(taskName, 0, args['simplification_str'])
+    env.load(taskName, 0, args.simplification_str)
     lm_model, tokenizer, sbert_model, llm = load_model(args, device)
-    # IQLagent_path = "/home/nctu/xyf/enlighten2/LLMAgent/methods/IQL/logs/scienceworld/IQL_Drrn/"+"compare_drrn_"+str(task_num)+".pt"
-    # IQLagent_path = "/home/nctu/xyf/enlighten2/LLMAgent/methods/IQL/logs/scienceworld/IQLgolden/final_golden.pt"
-    IQLmodel = load_model_iql(args["iql_path"], args)
+    IQLmodel = load_model_iql(args.iql_path, args)
 
     variations = load_variation(env, args, task_num, logger)
     filenameOutPrefixSeed = get_file_name(args, task_num)
     # plans = get_plans(args)
-    gpt_version = args["gpt_version"]
+    gpt_version = args.gpt_version
     scores = []
 
     for variation in variations:
-        if args["debug_var"] >=0 and variation != args["debug_var"]:
-            logger.info(f"Skipping the Var: {variation} because we only focus on args['debug_var'']={args['debug_var']}")
+        if args.debug_var >=0 and variation != args.debug_var:
+            logger.info(f"Skipping the Var: {variation} because we only focus on args.debug_var={args.debug_var}")
             continue 
         # train_data = []
-        env.load(taskName, variation, args["simplification_str"], generateGoldPath=True)
+        env.load(taskName, variation, args.simplification_str, generateGoldPath=True)
         task_description = env.taskdescription()[18:]
         logger.info(f"task_description = {task_description}")
         # task_description = env.taskdescription()  
@@ -241,7 +236,7 @@ def eval(args, task_num, logger):
         # The env has an internal step count, some actions like look around are free
         # however, the t5 model only generates the action "look around", which will result in a dead loop below
         # so the max_steps here is only used to avoid the model generating the same action forever
-        max_steps = args["env_step_limit"] * 2
+        max_steps = args.env_step_limit * 2
  
         action_buffer = []
         obs_buffer = [] # guess_obs_list
@@ -429,7 +424,7 @@ def eval(args, task_num, logger):
                 returns_to_go = round(returns_to_go, 2)
                 
 
-                mode = args["mode"]
+                mode = args.mode
                 logger.info("Mode: " + mode)
                 
                 clean_recent_actions, clean_recent_obs, clean_recent_scores, clean_recent_reward, _ = \
@@ -445,7 +440,7 @@ def eval(args, task_num, logger):
                 prev_obs = obs 
 
                 # Get valid actions at this point
-                if args["slow_agent"]:                    
+                if args.slow_agent:                    
                     force_system_2 = False 
                     force_system_1 = False 
                     
@@ -506,7 +501,7 @@ def eval(args, task_num, logger):
                     logger.info("InputStr: " + input_str)
                     predStrs = get_model_output(args, input_str, tokenizer, lm_model, device, logger)
                     # action = findValidActionNew(predStrs, env, info['look'], recent_actions, sbert_model, logger)
-                    generate_action_lst = findValidActionList(predStrs, env, info['look'], recent_actions, sbert_model, logger, args['beams'])
+                    generate_action_lst = findValidActionList(predStrs, env, info['look'], recent_actions, sbert_model, logger, args.beams)
                     logger.info(f"Generate_action_lst :{generate_action_lst}")
                     prob_scores = []
                     # print(len(generate_action_lst))
@@ -586,7 +581,7 @@ def eval(args, task_num, logger):
 
             if score < 0 or (len(recent_reward)>=100 and sum(recent_reward[-30:])==0):
                 # Note: our own solution for dealing with such cases; It is different from the official ScienceWorld evaluation script. You can find our discussion in the Issues.
-                if args["no_stop"]:
+                if args.no_stop:
                     done = True
                     score = last_score
                 else:
@@ -609,16 +604,10 @@ def eval(args, task_num, logger):
             logger.info("Recent Observations: " + str(recent_obs))
             logger.info("Recent Reward: " + str(recent_reward))
 
-            # Early stopping if we're in a loop
-            # TODO: removed this due to "wait and checking something"
-            # if len(recent_actions) >= 5 and len(set(recent_actions[-5:])) == 2:
-            #     logger.info("Many recent actions in history are the same -- model is likely in a loop, stopping early.")
-            #     break
-
 
         # # Store results
-        # env.storeRunHistory(variation, notes = {'mode':args["mode"], 'lm':str(args["lm_path"])} )
-        # env.saveRunHistoriesBufferIfFull(filenameOutPrefixSeed, maxPerFile=args["max_episode_per_file"])
+        # env.storeRunHistory(variation, notes = {'mode':args.mode, 'lm':str(args.lm_path)} )
+        # env.saveRunHistoriesBufferIfFull(filenameOutPrefixSeed, maxPerFile=args.max_episode_per_file)
 
         scores.append(score)
 
@@ -628,7 +617,7 @@ def eval(args, task_num, logger):
         time.sleep(2)
 
     # # Episodes are finished -- manually save any last histories still in the buffer
-    # env.saveRunHistoriesBufferIfFull(filenameOutPrefixSeed, maxPerFile=args["max_episode_per_file"], forceSave=True)
+    # env.saveRunHistoriesBufferIfFull(filenameOutPrefixSeed, maxPerFile=args.max_episode_per_file, forceSave=True)
 
     avg = sum(scores) / len(scores)
     logger.info("Average score: " + str(avg))
@@ -637,9 +626,6 @@ def eval(args, task_num, logger):
     f.write("\n" + "Task name:" + taskName + "Scores: " + str(scores) + " Average score: " + str(avg) + " Args: " + str(args) + "\n")
     f.close()
 
-    # f_all = open(args['output_path']+"all_average_scores.txt", "a")
-    # f_all.write("Task num:" + str(task_num) + " Average score: " + str(avg) + "\n")
-    # f_all.close()
 
     logger.info("Shutting down server...")
     # env.shutdown()
@@ -689,8 +675,7 @@ def parse_args():
     parser.add_argument('--limit_prob', type=float, default=0.25)
 
     args = parser.parse_args()
-    params = vars(args)
-    return params
+    return args
 
 #
 #   Main
@@ -707,7 +692,7 @@ def init_logger(args, task_num, log_level=INFO):
     ch.setLevel(log_level)
     ch.setFormatter(formatter)
     logger.addHandler(ch)
-    logging_dir = args["output_path"]
+    logging_dir = args.output_path
     if logging_dir:
         os.makedirs(logging_dir, exist_ok=True)
         now = int(round(time.time() * 1000))
@@ -726,12 +711,12 @@ def main():
     args = parse_args()
     print(args) 
     
-    torch.manual_seed(args['seed'])
-    torch.cuda.manual_seed(args['seed']) 
+    torch.manual_seed(args.seed)
+    torch.cuda.manual_seed(args.seed) 
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
 
-    task_nums = args["task_nums"].split(",")
+    task_nums = args.task_nums.split(",")
     for task_num in task_nums:
         logger = init_logger(args, task_num)
         logger.info(args)
