@@ -10,6 +10,7 @@ Use ```alfworld/IL/train_llama3/run_lora_deepspeed.sh``` to train the model. You
 ## 2. Train IQL
 
 Use ```retrospect_webshop.py``` to train iql model.
+There is an iql model in IQL_model folder, you can use it directly or train a model by yourself.
 
 ## 3. Test Retrospex
 
