@@ -9,7 +9,7 @@ from inference import cal_prob, MappingValidActionList, get_llama3_7b_response_m
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
-from IQLsrc.iql import ImplicitQLearning_webshop
+from IQL.src.iql import ImplicitQLearning_webshop
 import argparse
 
 def parse_args():
@@ -37,13 +37,12 @@ def parse_args():
 
 
     args = parser.parse_args()
-    params = vars(args)
-    return params
+    return args
 
 def load_model_iql(path, args):
     iql = ImplicitQLearning_webshop(
         args,
-        optimizer_factory=lambda params: torch.optim.Adam(params, lr=args['learning_rate'])
+        optimizer_factory=lambda params: torch.optim.Adam(params, lr=args.learning_rate)
     )
     iql.load_state_dict(torch.load(path))
     return iql
@@ -71,9 +70,8 @@ def decide_action(probs, q_values, step, args):
     nor_q = normalize(q_values)
     print(nor_prob)
     print(nor_q)
-    lam = args['discount_prob']**step
-    lam = max(args['limit_prob'], lam)
-    # lam = args['limit_prob']
+    lam = args.discount_prob**step
+    lam = max(args.limit_prob, lam)
     score = [nor_prob[i]*lam+nor_q[i]*(1-lam) for i in range(len(nor_q))]
     max_score = max(score)
     return score.index(max_score)
@@ -123,10 +121,10 @@ def alfworld_run(iql, sbert, args, info, model, tokenizer,env, prompt, to_print=
         valid_actions = list(info['admissible_commands'])[0]
         print('-------valid: ',valid_actions)
         # response = generate(model,tokenizer, prompt).strip()
-        responses = get_llama3_7b_response_multi(model, tokenizer, prompt, args['beams'])
+        responses = get_llama3_7b_response_multi(model, tokenizer, prompt, args.beams)
         actions = [filter(response) for response in responses]
         print('-------actions: ',actions)
-        actions = MappingValidActionList(actions, valid_actions, sbert, args['beams'])
+        actions = MappingValidActionList(actions, valid_actions, sbert, args.beams)
         print('-------mapped: ',actions)
         q_values = iql.get_q(des, last_ob, actions)
         print('-------q_values: ',q_values)
@@ -156,7 +154,7 @@ def main():
     model = AutoModelForCausalLM.from_pretrained(model_id,device_map='auto',torch_dtype=torch.float16)
     tokenizer = AutoTokenizer.from_pretrained(model_id)
 
-    iql = load_model_iql(args['iql_path'], args)
+    iql = load_model_iql(args.iql_path, args)
     sbert = SentenceTransformer('paraphrase-MiniLM-L6-v2')
     
     with open('base_config.yaml') as reader:
@@ -197,7 +195,7 @@ def main():
                 break
         print(_+1, 'r', r, 'rs', rs, 'cnts', cnts, 'sum(rs)/sum(cnts)', sum(rs) / sum(cnts))
         print('------------\n')
-        with open(args['output_file'],'a') as f:
+        with open(args.output_file,'a') as f:
             f.write(str(r))
             f.write('\n')
 
