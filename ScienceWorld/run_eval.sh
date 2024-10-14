@@ -9,6 +9,7 @@ mkdir -p $output_path
 echo "---> $output_path" 
  
 iql_path="put your iql model here"
+lm_path="put your T5 model here"
 
 
 if [ $num_gpus -eq 1 ]; then
@@ -33,6 +34,7 @@ for ((i=0; i<L; i++)); do
         --discount_prob 0.97 \
         --limit_prob 0.6 \
         --iql_path $iql_path \
+        --lm_path $lm_path \
         --output_path $output_path & # > /dev/null 2>&1 &
     sleep 10
 done
