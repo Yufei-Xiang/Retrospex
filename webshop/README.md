@@ -1,4 +1,5 @@
 First, you need to install the Webshop Environment according to https://github.com/princeton-nlp/WebShop.
+After that, put the content of this folder into the webshop folder downloaded in the first stage.
 
 ## 1. Train LLaMA3
 
