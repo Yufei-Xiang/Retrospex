@@ -1,4 +1,4 @@
-accelerate launch --config_file "deepspeed_config_qlora.yaml"  train.py \
+accelerate launch --config_file "deepspeed_config_lora.yaml"  train.py \
 --seed 100 \
 --model_name_or_path # TODO(llama3) \
 --dataset_name # TODO(AgentInstruct + ShareGPT) \
@@ -26,7 +26,7 @@ accelerate launch --config_file "deepspeed_config_qlora.yaml"  train.py \
 --gradient_accumulation_steps 8 \
 --gradient_checkpointing True \
 --use_reentrant False \
---dataset_text_field "text" \
+--dataset_text_field # TODO(based on your data file) \
 --use_flash_attn False \
 --use_peft_lora True \
 --lora_r 16 \
