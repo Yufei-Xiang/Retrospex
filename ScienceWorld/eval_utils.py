@@ -97,20 +97,20 @@ def get_current_room(look):
 
 
 def load_model(args, device):
-    tokenizer = AutoTokenizer.from_pretrained(args["lm_path"])
-    lm_model = AutoModelForSeq2SeqLM.from_pretrained(args["lm_path"])
+    tokenizer = AutoTokenizer.from_pretrained(args.lm_path)
+    lm_model = AutoModelForSeq2SeqLM.from_pretrained(args.lm_path)
     lm_model.eval() 
     lm_model.to(device)
-    if args["sbert"]:
+    if args.sbert:
         sbert_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
     else:
         sbert_model = None 
     
-    if args["local_llm"] == "xgen":
+    if args.local_llm == "xgen":
         local_llm.load()
         assert local_llm.llm_model is not None 
         assert local_llm.llm_tokenizer is not None 
-        print("Testing local LLM:" + args["local_llm"])
+        print("Testing local LLM:" + args.local_llm)
         print(local_llm.generate("Hello, who are you?")) # for testing 
         llm_model = local_llm.llm_model
     else:
@@ -122,39 +122,39 @@ def load_model(args, device):
 
 def load_variation(env, args, task_num, logger):
     variations = []
-    if (args["set"] == "train"):
+    if (args.set == "train"):
         variations = list(env.getVariationsTrain())
         if task_num == 26: 
             variations = variations[:int(len(variations)/10)]
         elif task_num == 29: 
             variations = variations[:int(len(variations)/2)]
-    elif (args["set"] == "test"):
+    elif (args.set == "test"):
         variations = list(env.getVariationsTest())
-        if args["cut_off"]:
+        if args.cut_off:
             test_len = min(50, len(variations))
             random.seed(1)
             random.shuffle(variations)
             variations = variations[:test_len]
-    elif (args["set"] == "dev"):
+    elif (args.set == "dev"):
         variations = list(env.getVariationsDev()) 
         variations = variations[:3]
-    elif (args["set"] == "test_mini_2"):
+    elif (args.set == "test_mini_2"):
         variations = list(env.getVariationsTest()) 
         # random.seed(1)
         # random.shuffle(variations)
         variations = variations[3:10] 
-    elif (args["set"] == "test_mini"):
+    elif (args.set == "test_mini"):
         variations = list(env.getVariationsTest()) 
         # random.seed(1)
         # random.shuffle(variations)
         variations = variations[:10] 
-    elif (args["set"] == "test_mini_mini"):
+    elif (args.set == "test_mini_mini"):
         variations = list(env.getVariationsTest()) 
         # random.seed(1)
         # random.shuffle(variations)
         variations = variations[:1] 
     else:
-        logger.info("ERROR: Unknown set to evaluate on (" + str(args["set"]) + ")")
+        logger.info("ERROR: Unknown set to evaluate on (" + str(args.set) + ")")
         exit(1)
  
     logger.info(variations)
@@ -934,13 +934,13 @@ def clean_history(recent_actions, recent_obs, recent_score, recent_reward, recen
 
     
 def get_model_output(args, input_str, tokenizer, lm_model, device, logger): 
-    input_ids = tokenizer(input_str, return_tensors="pt", max_length=args["max_input_len"] , truncation=True).input_ids
+    input_ids = tokenizer(input_str, return_tensors="pt", max_length=args.max_input_len , truncation=True).input_ids
 
     sample_outputs = lm_model.generate(
         input_ids.to(device),
         max_length=16,
-        num_return_sequences=args['beams'],
-        num_beams=args['beams'],
+        num_return_sequences=args.beams,
+        num_beams=args.beams,
     )
  
     lm_pred = sample_outputs
@@ -957,13 +957,13 @@ def get_model_output(args, input_str, tokenizer, lm_model, device, logger):
     return predStrs
 
 def get_model_output_withscore(args, input_str, tokenizer, lm_model, device, logger): 
-    input_ids = tokenizer(input_str, return_tensors="pt", max_length=args["max_input_len"] , truncation=True).input_ids
+    input_ids = tokenizer(input_str, return_tensors="pt", max_length=args.max_input_len , truncation=True).input_ids
 
     sample_outputs = lm_model.generate(
         input_ids.to(device),
         max_length=16,
-        num_return_sequences=args['beams'],
-        num_beams=args['beams'],
+        num_return_sequences=args.beams,
+        num_beams=args.beams,
         output_scores = True,
         return_dict_in_generate = True
     )
