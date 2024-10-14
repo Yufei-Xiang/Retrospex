@@ -482,8 +482,8 @@ def evaluate_web_llama3finetuned_addIQL(env, model, tokenizer, IQLmodel, sbert_m
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env_step_limit", type=int, default=15)
-    parser.add_argument("--round", type=int, default=1)
+    parser.add_argument("--env_step_limit", type=int, default=15) # limit steps per trajectories
+    parser.add_argument("--round", type=int, default=200) # test samples
     parser.add_argument("--task_id", type=int, default=5)
     parser.add_argument("--beams", type=int, default=4)
     parser.add_argument("--seed", type=int, default=42)
@@ -499,10 +499,10 @@ def parse_args():
     parser.add_argument('--tau', type=float, default=0.7)
     parser.add_argument('--beta', type=float, default=3.0)
     parser.add_argument('--learning-rate', type=float, default=1e-4)
-    parser.add_argument('--discount_prob', type=float, default=0.9)
-    parser.add_argument('--limit_prob', type=float, default=0.5)
-    parser.add_argument("--iql_path", type=str, default="IQLmodel/final_iql_webshop.pt")
-    parser.add_argument("--llm_path", type=str)
+    parser.add_argument('--discount_prob', type=float, default=0.9) # d
+    parser.add_argument('--limit_prob', type=float, default=0.5) # b
+    parser.add_argument("--iql_path", type=str, default="IQLmodel/final_iql_webshop_1500.pt") # your IQL model path
+    parser.add_argument("--llm_path", type=str) # your llama3 path
 
     args = parser.parse_args()
     # params = vars(args)
@@ -535,11 +535,10 @@ def main():
     # evaluate_web_chatmodel(env, client, args)
 
     def filter_goals(i, goal):
-        if i == args.task_id+r+2500:
+        if i == args.task_id+r+2000:
             return True
         return False
     for r in range(args.round):
-
         env = gym.make('WebAgentTextEnv-v0', observation_mode='text', filter_goals=filter_goals, num_products=DEBUG_PROD_SIZE)
         evaluate_web_llama3finetuned_addIQL(env, model, tokenizer, IQLmodel, sbert_model, args)
         # evaluate_web_llama3finetuned(env, model, tokenizer, args)
