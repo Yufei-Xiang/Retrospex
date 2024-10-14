@@ -51,7 +51,7 @@ Then you can run ```webshop/dynamic_action_scoring_alfworld.py``` to test the mo
 if you decide to use our model and code, please cite:
 ```bash
 @inproceedings{yufei2024retrospex,
-  title={Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks},
+  title={Retrospex: Language Agent Meets Offline Reinforcement Learning Critic},
   author={Yufei Xiang, Yiqun Shen, Yeqin Zhang and Cam-Tu Nguyen},
   booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing, {EMNLP},
   year={2024}
