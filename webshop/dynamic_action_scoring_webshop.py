@@ -217,7 +217,7 @@ def init_message_llama3_7B(): # 改成对应任务的prompt
 def load_model_iql(path, args):
     iql = ImplicitQLearning_webshop(
         args,
-        optimizer_factory=lambda params: torch.optim.Adam(params, lr=args['learning_rate'])
+        optimizer_factory=lambda params: torch.optim.Adam(params, lr=args.learning_rate)
     )
     iql.load_state_dict(torch.load(path))
     return iql
@@ -251,8 +251,8 @@ def decide_action(probs, q_values, step, args):
     nor_q = normalize(q_values)
     print(nor_prob)
     print(nor_q)
-    lam = args['discount_prob']**step
-    lam = max(args['limit_prob'], lam)
+    lam = args.discount_prob**step
+    lam = max(args.limit_prob, lam)
     # lam = args['limit_prob']
     score = [nor_prob[i]*lam+nor_q[i]*(1-lam) for i in range(len(nor_q))]
     max_score = max(score)
@@ -310,13 +310,13 @@ def get_prompt(conv: Conversation) -> str:
         return conv.get_prompt()
 
 def evaluate_web_human(env, args):
-    for r in range(args['round']):
+    for r in range(args.round):
         env.reset()
         observation = env.observation
         pre_obs = str(observation)
         step = 0
         # row = {'obs':observation,'action':"Null",'action_lst':"Null",'score':0}
-        while step < args['env_step_limit']:
+        while step < args.env_step_limit:
             print(observation)
             available_actions = env.get_available_actions()
             print(type(available_actions))
@@ -332,13 +332,13 @@ def evaluate_web_human(env, args):
     env.close()
 
 def evaluate_web_chatmodel(env, client, args):
-    for r in range(args['round']):
+    for r in range(args.round):
         env.reset()
         observation = env.observation
         step = 0
         messages = initial_messages_chat()
         messages.append({"role":"user", "content":str(observation).replace('[SEP]','\n')})
-        while step < args['env_step_limit']:
+        while step < args.env_step_limit:
             print(observation)
             chat_completion = client.chat.completions.create(
                 model="meta-llama/Llama-3-70b-chat-hf",
@@ -377,7 +377,7 @@ def evaluate_web_llama3finetuned(env, model, tokenizer, args):
         messages = init_message_llama3_7B()
         messages.append({"role":"user", "content":str(observation)})
         done = False
-        while step < args['env_step_limit']:
+        while step < args.env_step_limit:
             # print(observation)
             response = get_llama3_7b_response(model, tokenizer, messages)
             # print(response)
@@ -403,7 +403,7 @@ def evaluate_web_llama3finetuned(env, model, tokenizer, args):
             if final_action in get_available_actions(env.get_available_actions()):
                 observation, reward, done, info = env.step('click[buy now]')    
                 final_reward = reward
-    with open(args['output_file'],'a') as f:
+    with open(args.output_file,'a') as f:
         f.write(str(final_reward))
         f.write("\n")
     
@@ -427,12 +427,12 @@ def evaluate_web_llama3finetuned_addIQL(env, model, tokenizer, IQLmodel, sbert_m
         final_reward = 0
         done = False
         action = None
-        while step < args['env_step_limit']:
+        while step < args.env_step_limit:
             # print(observation)
-            responses = get_llama3_7b_response_multi(model, tokenizer, messages, args['beams'])
+            responses = get_llama3_7b_response_multi(model, tokenizer, messages, args.beams)
             # print(responses)
             avaliable_actions = get_available_actions(env.get_available_actions())
-            mapped_actions = MappingValidActionList(responses, avaliable_actions, sbert_model, args['beams'])
+            mapped_actions = MappingValidActionList(responses, avaliable_actions, sbert_model, args.beams)
             # mapped_actions = get_actions_origin(responses)
             # print(mapped_actions)
             if len(mapped_actions)>1:
@@ -464,7 +464,7 @@ def evaluate_web_llama3finetuned_addIQL(env, model, tokenizer, IQLmodel, sbert_m
             if final_action in get_available_actions(env.get_available_actions()):
                 observation, reward, done, info = env.step('click[buy now]')    
                 final_reward = reward
-        with open(args['output_file'],'a') as f:
+        with open(args.output_file,'a') as f:
             f.write(str(final_reward))
             f.write("\n")
         reward_total.append(final_reward)
@@ -478,38 +478,6 @@ def evaluate_web_llama3finetuned_addIQL(env, model, tokenizer, IQLmodel, sbert_m
         
     env.close()
 
-def evaluate_web(env, model, tokenizer, args):
-    for r in range(args['round']):
-        env.reset()
-        conv = get_conversation_template('llama-2')
-        conv.set_system_message("You are a helpful, respectful and honest assistant.")
-        conv.append_message(conv.roles[0], "You are web shopping.\nI will give you instructions about what to do.\nYou have to follow the instructions.\nEvery round I will give you an observation and a list of available actions, you have to respond an action based on the state and instruction.\nYou can use search action if search is available.\nYou can click one of the buttons in clickables.\nAn action should be of the following structure:\nsearch[keywords]\nclick[value]\nIf the action is not valid, perform nothing.\nKeywords in search are up to you, but the value in click must be a value in the list of available actions.\nRemember that your keywords in search should be carefully designed.\nYour response should use the following format:\n\nThought:\nI think ... \n\nAction: \nclick[something]") # user
-        conv.append_message(conv.roles[1], 'Ok.') # assistant
-        observation = env.observation
-        pre_obs = str(observation)
-        conv.append_message(conv.roles[0], str(observation))
-        step = 0
-        # row = {'obs':observation,'action':"Null",'action_lst':"Null",'score':0}
-        while step < args['env_step_limit']:
-            print(observation)
-            available_actions = env.get_available_actions()
-            print('Available actions:', available_actions)
-            # action = policy.forward(observation, available_actions)
-            prompt = get_prompt(conv)
-            response = llm_tgi(prompt, model, tokenizer)
-            conv.append_message(conv.roles[1], response)
-            action = response.replace("\n",'').split('Action:')[-1]
-            # action = input("please enter the action:")
-            observation, reward, done, info = env.step(action)
-            conv.append_message(conv.roles[0], str(observation))
-            # row = {'obs':pre_obs,'next_obs':observation,'action':action,'action_lst':available_actions,'score':reward}
-            print(f'Taking action "{escape(action)}" -> Reward = {reward}')
-            if done:
-                break
-            pre_obs = observation
-            step += 1
-
-    env.close()
 
 
 def parse_args():
@@ -533,17 +501,17 @@ def parse_args():
     parser.add_argument('--learning-rate', type=float, default=1e-4)
     parser.add_argument('--discount_prob', type=float, default=0.9)
     parser.add_argument('--limit_prob', type=float, default=0.5)
-    parser.add_argument("--iql_path", type=str, default="IQLmodel/final_iql_webshop_twin_20.pt")
+    parser.add_argument("--iql_path", type=str, default="IQLmodel/final_iql_webshop.pt")
     parser.add_argument("--llm_path", type=str)
 
     args = parser.parse_args()
-    params = vars(args)
-    return params
+    # params = vars(args)
+    return args
 
 def main():
     args = parse_args()
     # fine-tuned llama3 8B
-    model_id = args["llm_path"]
+    model_id = args.llm_path
 
     tokenizer = AutoTokenizer.from_pretrained(model_id,trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(
@@ -556,7 +524,7 @@ def main():
         # max_memory=max_memory_mapping
     ).cuda()
 
-    IQLmodel = load_model_iql(args['iql_path'], args)
+    IQLmodel = load_model_iql(args.iql_path, args)
     sbert_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 
     # # chat model calling API
@@ -567,11 +535,10 @@ def main():
     # evaluate_web_chatmodel(env, client, args)
 
     def filter_goals(i, goal):
-        if i == args['task_id']+r+2500:
-        # if i == args['task_id']+r:
+        if i == args.task_id+r+2500:
             return True
         return False
-    for r in range(args['round']):
+    for r in range(args.round):
 
         env = gym.make('WebAgentTextEnv-v0', observation_mode='text', filter_goals=filter_goals, num_products=DEBUG_PROD_SIZE)
         evaluate_web_llama3finetuned_addIQL(env, model, tokenizer, IQLmodel, sbert_model, args)
@@ -579,9 +546,5 @@ def main():
         torch.cuda.empty_cache()
         time.sleep(3)
     
-    # evaluate_web_llama3finetuned(env, model, tokenizer, args)
-    # evaluate_web_llama3finetuned_addIQL(env, model, tokenizer, args)
-    # env = gym.make('WebAgentTextEnv-v0', observation_mode='text', num_products=DEBUG_PROD_SIZE)
-    # evaluate_web_human(env, args)
 
 main()
