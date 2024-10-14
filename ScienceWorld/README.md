@@ -8,6 +8,7 @@ Run ```ScienceWorld/IL/fast_agent/ds_train.sh``` to train the flan t5 large mode
 
 Unzip the trajectories in memory_trajectories folder.
 Use ```retrospect_scienceworld.py``` to train iql model.
+Also, you can use the iql model in IQLmodel folder we used in our paper.
 
 ## 3. Test Retrospex
 
